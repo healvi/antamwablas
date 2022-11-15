@@ -2,6 +2,7 @@ import React from "react";
 import Drawer from "../components/molekul/Drawer";
 import Menu from "../components/molekul/Menu";
 import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const Home = () => {
         <Menu />
       </div>
       <div className="basis-full md:basis-4/5">
+        {/* Nav */}
         <nav className="flex bg-white border-gray-200 px-2 sm:px-4 py-2.5 dark:bg-indigo-800 md:hidden">
           <button
             onClick={() => setIsOpen(true)}
@@ -36,6 +38,7 @@ const Home = () => {
             </svg>
           </button>
         </nav>
+        <Outlet />
       </div>
       <Drawer isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>

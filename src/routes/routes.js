@@ -1,26 +1,21 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import * as Middleware from "../middleware/Middleware";
 import Login from "../pages/Auth/Login";
+import Dashboard from "../pages/Dashboard/Dashboard";
+import History from "../pages/Dashboard/History";
 import Home from "../pages/Home";
 
 const Routest = () => (
   <Router>
     <Routes>
-    <Route
-        path="/"
-        exact
-        element={
-        //   <Middleware.Guest>
-            <Home />
-        //   </Middleware.Guest>
-        }
-      ></Route>
+      <Route path="/" exact element={<Home />}>
+        <Route index element={<Dashboard />} />
+        <Route path="/History" element={<History />} />
+      </Route>
       <Route
         path="/Login"
         element={
-        //   <Middleware.Guest>
-            <Login />
-        //   </Middleware.Guest>
+          <Login />
         }
       />
       {/* 
