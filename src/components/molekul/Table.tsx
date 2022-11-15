@@ -1,6 +1,31 @@
+import axios from "axios";
 import React from "react";
+import { useState, useEffect } from "react";
 
 const Table = () => {
+  const [table, setTable] = useState();
+  const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files !== null) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      console.log(file);
+      formData.append("file", file);
+      axios
+        .post("http://localhost:8000/api/users", formData)
+        .then((response) => {
+          setTable(JSON.parse(JSON.parse(response.data.data)));
+        })
+        .catch((e) => {
+          console.log("error");
+        });
+    }
+    e.target.value = "";
+  };
+
+  useEffect(() => {
+    console.log(table);
+  }, [table]);
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
       <div className="pb-4 bg-white dark:bg-indigo-900 p-2 flex flex-row">
@@ -29,6 +54,7 @@ const Table = () => {
           <input
             className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
             aria-describedby="user_avatar_help"
+            onChange={(e) => onUpload(e)}
             id="user_avatar"
             type="file"
           />

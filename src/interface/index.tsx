@@ -1,6 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 
-export interface openSome {}
+export interface froms {
+  name: string;
+  file: FileList | null;
+}
 
 export type OpenSomes = {
   isOpen: Boolean;
