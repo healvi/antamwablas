@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import readXlsxFile from "read-excel-file";
 import { tableBroaFormat, tableBroaFormatCheck } from "../../interface";
+import { BroadcastSchema } from "../../utils/Schema";
 
 const TableCast = () => {
   const [tables, setTable] = useState<tableBroaFormatCheck[]>();
@@ -12,19 +13,7 @@ const TableCast = () => {
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const schema = {
-      nama: {
-        prop: "nama",
-        type: String,
-        required: true,
-      },
-      no_telp: {
-        prop: "number",
-        type: String,
-        required: true,
-      },
-    };
-
+    const schema = BroadcastSchema;
     if (e.target.files !== null) {
       const file = e.target.files[0];
       readXlsxFile(file, { schema }).then((rows) => {

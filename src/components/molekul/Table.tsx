@@ -1,40 +1,13 @@
 import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
+import readXlsxFile from "read-excel-file";
 import { sortlistTable, tableFormat, tableFormatCheck } from "../../interface";
 import { findTrue } from "../../utils/engine";
+import { BlastSchema } from "../../utils/Schema";
 
 const Table = () => {
   const [datas, setDatas] = useState<tableFormat[]>();
-  //   [
-  //   {
-  //     nama: "mohammad irvan",
-  //     number: "085735784029",
-  //     KSM: 1,
-  //     KPR: 0,
-  //     CC: 1,
-  //     DEPOSITO: 0,
-  //     MTR: 0,
-  //   },
-  //   {
-  //     nama: "Andriansyah",
-  //     number: "085735784021",
-  //     KSM: 1,
-  //     KPR: 0,
-  //     CC: 0,
-  //     DEPOSITO: 1,
-  //     MTR: 0,
-  //   },
-  //   {
-  //     nama: "FIFI",
-  //     number: "085735784022",
-  //     KSM: 0,
-  //     KPR: 1,
-  //     CC: 0,
-  //     DEPOSITO: 0,
-  //     MTR: 1,
-  //   },
-  // ]
   const [tables, setTable] = useState<tableFormatCheck[]>();
   const [checkAll, setCheckAll] = useState(false);
   const [Sorteds, setSorted] = useState<sortlistTable>({
@@ -46,18 +19,24 @@ const Table = () => {
   });
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
+    const schema = BlastSchema;
     if (e.target.files !== null) {
       const file = e.target.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-      axios
-        .post("http://localhost:8000/api/clusters", formData)
-        .then((response) => {
-          setDatas(JSON.parse(JSON.parse(response.data.data)));
-        })
-        .catch((e) => {
-          console.log("error");
-        });
+      readXlsxFile(file, { schema }).then((rows) => {
+        let newData = rows.rows.map((v) => ({ ...v, checkAll: checkAll }));
+        setDatas(newData as tableFormatCheck[]);
+      });
+      // const file = e.target.files[0];
+      // const formData = new FormData();
+      // formData.append("file", file);
+      // axios
+      //   .post("http://localhost:8000/api/clusters", formData)
+      //   .then((response) => {
+      //     setDatas(JSON.parse(JSON.parse(response.data.data)));
+      //   })
+      //   .catch((e) => {
+      //     console.log("error");
+      //   });
     }
     e.target.value = "";
   };
