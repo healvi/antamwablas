@@ -2,15 +2,11 @@ import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
 import readXlsxFile from "read-excel-file";
-import {
-  sortlistTable,
-  tableBroaFormat,
-  tableBroaFormatCheck,
-} from "../../interface";
+import { tableBroaFormat, tableBroaFormatCheck } from "../../interface";
 
 const TableCast = () => {
   const [tables, setTable] = useState<tableBroaFormatCheck[]>();
-  const [searchs, setSearch] = useState();
+  const [Choses, setChoses] = useState("");
   const [datas, setDatas] = useState<tableBroaFormat[]>();
   const [checkAll, setCheckAll] = useState(false);
 
@@ -46,8 +42,32 @@ const TableCast = () => {
     }
   };
 
+  const anCheckData = (data: tableBroaFormatCheck) => {
+    const datas = tables?.map((object: tableBroaFormatCheck) => {
+      if (object.number === data.number) {
+        return { ...object, checkAll: !data.checkAll };
+      }
+      return object;
+    });
+    setTable(datas);
+  };
+  const sendBlasChecked = () => {
+    console.log(tables);
+    if (tables) {
+      const data = tables.filter(
+        (v: tableBroaFormatCheck) => v.checkAll === true
+      );
+      data.map((v) => {
+        console.log(v);
+      });
+    }
+  };
+  const sendBlas = (data: tableBroaFormatCheck) => {
+    //   Send Api This
+  };
+
   useEffect(() => {
-    modifytable(datas);
+    modifytable(tables);
   }, [checkAll]);
   useEffect(() => {
     // console.log(tables);
@@ -56,20 +76,32 @@ const TableCast = () => {
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
       <div className="pb-4 bg-white dark:bg-indigo-900 p-2 flex flex-row">
-        <div className="basis-1/2">
+        <div className="basis-1/2 mx-4">
           <label
-            className=" block mb-2 text-sm font-medium text-white dark:text-white-300"
-            htmlFor="user_avatar"
+            htmlFor="countries"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Search By Name
+            Select an option
           </label>
-          <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"></div>
-          <input
-            type="text"
-            id="table-search"
-            className="block p-2 pl-10 w-80 text-sm text-black-600 bg-white-50 rounded-lg border border-white-300 focus:ring-white-500 focus:border-white-500 dark:bg-white-700 dark:border-white-600 dark:placeholder-white-400 dark:text-black dark:focus:ring-white-500 dark:focus:border-white-500 "
-            placeholder="Search Name"
-          />
+          <select
+            onChange={(e) => setChoses(e.target.value)}
+            id="countries"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option selected>Choose a Segmen</option>
+            <option value="KSM">KSM</option>
+            <option value="KPR">KPR</option>
+            <option value="CC">CC</option>
+            <option value="DEPOSITO">DEPOSITO</option>
+            <option value="MTR">MTR</option>
+          </select>
+          <button
+            onClick={() => sendBlasChecked()}
+            type="button"
+            className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Send All Checked
+          </button>
         </div>
         <div className="basis-1/2">
           <label
@@ -128,6 +160,7 @@ const TableCast = () => {
                 <td className="p-4 w-4">
                   <div className="flex items-center">
                     <input
+                      onChange={() => anCheckData(data)}
                       id="checkbox-table-search-1"
                       type="checkbox"
                       name="checkUnit"
@@ -153,8 +186,9 @@ const TableCast = () => {
                 {/* Action */}
                 <td className="py-4 px-2">
                   <img
+                    onClick={() => sendBlas(data)}
                     src={require("../../assets/icons/send.svg").default}
-                    className="icon send-icon"
+                    className="icon send-icon cursor-pointer"
                     alt="send-icon"
                     data-testid="send-icon"
                   />
