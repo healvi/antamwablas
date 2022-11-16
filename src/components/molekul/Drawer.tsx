@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { OpenSomes } from "../../interface/index";
 import Menu from "./Menu";
 

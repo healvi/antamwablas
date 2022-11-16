@@ -13,6 +13,16 @@ export interface tableFormat {
   DEPOSITO: number;
   MTR: number;
 }
+export interface tableBroaFormat {
+  nama: string;
+  number: string;
+}
+
+export interface tableBroaFormatCheck {
+  checkAll: boolean;
+  nama: string;
+  number: string;
+}
 export interface tableFormatCheck {
   checkAll: boolean;
   nama: string;

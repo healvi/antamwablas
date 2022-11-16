@@ -2,18 +2,10 @@ import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
 import { sortlistTable, tableFormat, tableFormatCheck } from "../../interface";
+import { findTrue } from "../../utils/engine";
 
 const Table = () => {
-  const [tables, setTable] = useState<tableFormatCheck[]>();
-  const [Sorteds, setSorted] = useState<sortlistTable>({
-    KSM: false,
-    KPR: false,
-    CC: false,
-    DEPOSITO: false,
-    MTR: false,
-  });
-  const [checkAll, setCheckAll] = useState(false);
-  const datas = [
+  const [datas, setDatas] = useState<tableFormat[]>([
     {
       nama: "mohammad irvan",
       number: "085735784029",
@@ -41,7 +33,18 @@ const Table = () => {
       DEPOSITO: 0,
       MTR: 1,
     },
-  ];
+  ]);
+  const [tables, setTable] = useState<tableFormatCheck[]>();
+  const [searchs, setSearch] = useState();
+  const [Sorteds, setSorted] = useState<sortlistTable>({
+    KSM: false,
+    KPR: false,
+    CC: false,
+    DEPOSITO: false,
+    MTR: false,
+  });
+  const [checkAll, setCheckAll] = useState(false);
+
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files !== null) {
@@ -68,10 +71,13 @@ const Table = () => {
         return v[f as keyof typeof Sorteds] === 1;
       });
     });
-    setTable(newData);
-    console.log(areTrue);
-    console.log(newsData);
+    if (newsData.length > 0) {
+      setTable(newsData);
+    } else {
+      setTable(newData);
+    }
   };
+
   const sortedTable = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newData = !Sorteds[e.target.name as keyof typeof Sorteds];
     setSorted({
@@ -79,33 +85,74 @@ const Table = () => {
       [e.target.name]: newData,
     });
   };
-  useEffect(() => {
-    const areTrue = Object.keys(Sorteds).filter(
-      (key) => Sorteds[key as keyof typeof Sorteds]
-    );
 
+  const anCheckData = (data: tableFormatCheck) => {
+    const datas = tables?.map((object: tableFormatCheck) => {
+      if (object.number === data.number) {
+        return { ...object, checkAll: !data.checkAll };
+      }
+      return object;
+    });
+    setTable(datas);
+  };
+  const sendBlas = (data: tableFormatCheck) => {
+    const eligible = findTrue(data).filter(
+      (v) => v !== "nama" && v !== "number" && v !== "checkAll"
+    );
+    const datas: any[] = [];
+    eligible.map((v) => {
+      //  Send Wa blas To Api
+      datas.push("makan");
+      return "Proses terkirim";
+    });
+    console.log(eligible);
+  };
+  const sendBlasChecked = () => {
+    if (tables) {
+      const data = tables.filter((v: tableFormatCheck) => v.checkAll === true);
+      data.map((v) => {
+        sendBlas(v);
+      });
+    }
+  };
+  const sendBlasFilter = () => {
+    const areTrue = findTrue(Sorteds);
+    if (areTrue.length) {
+      areTrue.map((v) => {
+        tables?.map((d) => {
+          if (d[v as keyof typeof Sorteds] === 1) {
+            // Send APi from this
+          }
+        });
+      });
+    }
+  };
+  useEffect(() => {
+    const areTrue = findTrue(Sorteds);
     modifytable(datas, areTrue);
   }, [checkAll, Sorteds]);
   useEffect(() => {
     // console.log(tables);
   }, [tables]);
+
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
       <div className="pb-4 bg-white dark:bg-indigo-900 p-2 flex flex-row">
-        <div className="basis-1/2">
-          <label
-            className=" block mb-2 text-sm font-medium text-white dark:text-white-300"
-            htmlFor="user_avatar"
+        <div className="basis-1/2 flex flex-row items-center">
+          <button
+            onClick={() => sendBlasChecked()}
+            type="button"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
-            Search By Name
-          </label>
-          <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"></div>
-          <input
-            type="text"
-            id="table-search"
-            className="block p-2 pl-10 w-80 text-sm text-black-600 bg-white-50 rounded-lg border border-white-300 focus:ring-white-500 focus:border-white-500 dark:bg-white-700 dark:border-white-600 dark:placeholder-white-400 dark:text-black dark:focus:ring-white-500 dark:focus:border-white-500 "
-            placeholder="Search Name"
-          />
+            Send All Checked
+          </button>
+          <button
+            onClick={() => sendBlasFilter()}
+            type="button"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          >
+            Send With Filter
+          </button>
         </div>
         <div className="basis-1/2">
           <label
@@ -236,6 +283,7 @@ const Table = () => {
                     <input
                       id="checkbox-table-search-1"
                       type="checkbox"
+                      onChange={() => anCheckData(data)}
                       name="checkUnit"
                       checked={data.checkAll}
                       className="w-4 h-4 text-white-600 bg-indigo-100 rounded border-indigo-300 focus:ring-white-500 dark:focus:ring-white-600 dark:ring-offset-indigo-800 focus:ring-2 dark:bg-indigo-700 dark:border-indigo-600"
@@ -343,8 +391,9 @@ const Table = () => {
                 {/* Action */}
                 <td className="py-4 px-2">
                   <img
+                    onClick={() => sendBlas(data)}
                     src={require("../../assets/icons/send.svg").default}
-                    className="icon send-icon"
+                    className="icon send-icon cursor-pointer"
                     alt="send-icon"
                     data-testid="send-icon"
                   />
