@@ -49,26 +49,46 @@ const TableCast = () => {
       }
       return object;
     });
+
     setTable(datas);
   };
   const sendBlasChecked = () => {
-    console.log(tables);
-    if (tables) {
+    if (tables && Choses.length > 0) {
       const data = tables.filter(
         (v: tableBroaFormatCheck) => v.checkAll === true
       );
-      data.map((v) => {
-        console.log(v);
+      data.map(async (v) => {
+        await axios
+          .put("http://localhost:8000/api/broadcast", {
+            ...v,
+            segmen: Choses,
+          })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((e) => {
+            console.log("error");
+          });
       });
     }
   };
-  const sendBlas = (data: tableBroaFormatCheck) => {
-    //   Send Api This
+  const sendBlas = async (data: tableBroaFormatCheck) => {
+    await axios
+      .put("http://localhost:8000/api/broadcast", {
+        ...data,
+        segmen: Choses,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((e) => {
+        console.log("error");
+      });
   };
 
   useEffect(() => {
     modifytable(tables);
-  }, [checkAll]);
+  }, [checkAll, datas]);
   useEffect(() => {
     // console.log(tables);
   }, [tables]);

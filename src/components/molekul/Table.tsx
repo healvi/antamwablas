@@ -5,37 +5,38 @@ import { sortlistTable, tableFormat, tableFormatCheck } from "../../interface";
 import { findTrue } from "../../utils/engine";
 
 const Table = () => {
-  const [datas, setDatas] = useState<tableFormat[]>([
-    {
-      nama: "mohammad irvan",
-      number: "085735784029",
-      KSM: 1,
-      KPR: 0,
-      CC: 1,
-      DEPOSITO: 0,
-      MTR: 0,
-    },
-    {
-      nama: "Andriansyah",
-      number: "085735784021",
-      KSM: 1,
-      KPR: 0,
-      CC: 0,
-      DEPOSITO: 1,
-      MTR: 0,
-    },
-    {
-      nama: "FIFI",
-      number: "085735784022",
-      KSM: 0,
-      KPR: 1,
-      CC: 0,
-      DEPOSITO: 0,
-      MTR: 1,
-    },
-  ]);
+  const [datas, setDatas] = useState<tableFormat[]>();
+  //   [
+  //   {
+  //     nama: "mohammad irvan",
+  //     number: "085735784029",
+  //     KSM: 1,
+  //     KPR: 0,
+  //     CC: 1,
+  //     DEPOSITO: 0,
+  //     MTR: 0,
+  //   },
+  //   {
+  //     nama: "Andriansyah",
+  //     number: "085735784021",
+  //     KSM: 1,
+  //     KPR: 0,
+  //     CC: 0,
+  //     DEPOSITO: 1,
+  //     MTR: 0,
+  //   },
+  //   {
+  //     nama: "FIFI",
+  //     number: "085735784022",
+  //     KSM: 0,
+  //     KPR: 1,
+  //     CC: 0,
+  //     DEPOSITO: 0,
+  //     MTR: 1,
+  //   },
+  // ]
   const [tables, setTable] = useState<tableFormatCheck[]>();
-  const [searchs, setSearch] = useState();
+  const [checkAll, setCheckAll] = useState(false);
   const [Sorteds, setSorted] = useState<sortlistTable>({
     KSM: false,
     KPR: false,
@@ -43,19 +44,16 @@ const Table = () => {
     DEPOSITO: false,
     MTR: false,
   });
-  const [checkAll, setCheckAll] = useState(false);
-
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files !== null) {
       const file = e.target.files[0];
       const formData = new FormData();
-      console.log(file);
       formData.append("file", file);
       axios
-        .post("http://localhost:8000/api/users", formData)
+        .post("http://localhost:8000/api/clusters", formData)
         .then((response) => {
-          setTable(JSON.parse(JSON.parse(response.data.data)));
+          setDatas(JSON.parse(JSON.parse(response.data.data)));
         })
         .catch((e) => {
           console.log("error");
@@ -63,7 +61,6 @@ const Table = () => {
     }
     e.target.value = "";
   };
-
   const modifytable = (data: tableFormat[], areTrue: String[]) => {
     let newData = data.map((v) => ({ ...v, checkAll: checkAll }));
     let newsData = newData.filter((v) => {
@@ -77,7 +74,6 @@ const Table = () => {
       setTable(newData);
     }
   };
-
   const sortedTable = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newData = !Sorteds[e.target.name as keyof typeof Sorteds];
     setSorted({
@@ -85,7 +81,6 @@ const Table = () => {
       [e.target.name]: newData,
     });
   };
-
   const anCheckData = (data: tableFormatCheck) => {
     const datas = tables?.map((object: tableFormatCheck) => {
       if (object.number === data.number) {
@@ -100,12 +95,21 @@ const Table = () => {
       (v) => v !== "nama" && v !== "number" && v !== "checkAll"
     );
     const datas: any[] = [];
-    eligible.map((v) => {
+    eligible.map(async (v) => {
       //  Send Wa blas To Api
-      datas.push("makan");
+      await axios
+        .post("http://localhost:8000/api/wablast", {
+          ...data,
+          segmen: v,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((e) => {
+          console.log("error");
+        });
       return "Proses terkirim";
     });
-    console.log(eligible);
   };
   const sendBlasChecked = () => {
     if (tables) {
@@ -119,9 +123,19 @@ const Table = () => {
     const areTrue = findTrue(Sorteds);
     if (areTrue.length) {
       areTrue.map((v) => {
-        tables?.map((d) => {
+        tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
-            // Send APi from this
+            await axios
+              .put("http://localhost:8000/api/wablast", {
+                ...d,
+                segmen: v,
+              })
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((e) => {
+                console.log("error");
+              });
           }
         });
       });
@@ -129,8 +143,10 @@ const Table = () => {
   };
   useEffect(() => {
     const areTrue = findTrue(Sorteds);
-    modifytable(datas, areTrue);
-  }, [checkAll, Sorteds]);
+    if (datas) {
+      modifytable(datas, areTrue);
+    }
+  }, [checkAll, Sorteds, datas]);
   useEffect(() => {
     // console.log(tables);
   }, [tables]);
@@ -401,7 +417,7 @@ const Table = () => {
               </tr>
             ))
           ) : (
-            <div>DATA KOSOSNg</div>
+            <div className="text-center w-min-full p-4">Upload Your Data</div>
           )}
         </tbody>
       </table>
