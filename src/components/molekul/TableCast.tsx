@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import readXlsxFile from "read-excel-file";
 import { tableBroaFormat, tableBroaFormatCheck } from "../../interface";
 import { BroadcastSchema } from "../../utils/Schema";
+import ModalBroad from "./ModalBroad";
+import { tabs } from "../../interface/index";
 
 const TableCast = () => {
   const [tables, setTable] = useState<tableBroaFormatCheck[]>();
   const [Choses, setChoses] = useState("");
   const [checkAll, setCheckAll] = useState(false);
-
+  const [open, setOpen] = useState(false);
+  const [tabs, setTabs] = useState<tabs>();
+  const openModal = () => {
+    setOpen(!open);
+  };
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const schema = BroadcastSchema;
@@ -46,6 +52,8 @@ const TableCast = () => {
       // let newdata = data.map((v) => ({ ...v, segmen: Choses }));
       let newdata = {
         data: data,
+        message: tabs?.message,
+        image: tabs?.image,
         segmen: Choses,
       };
       console.log(newdata);
@@ -92,9 +100,7 @@ const TableCast = () => {
   useEffect(() => {
     modifytable(tables);
   }, [checkAll]);
-  useEffect(() => {
-    // console.log(tables);
-  }, [tables]);
+  useEffect(() => {}, [tables, tabs]);
 
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
@@ -119,7 +125,8 @@ const TableCast = () => {
             <option value="MTR">MTR</option>
           </select>
           <button
-            onClick={() => sendBlasChecked()}
+            onClick={() => openModal()}
+            // onClick={() => sendBlasChecked()}
             type="button"
             className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
@@ -171,9 +178,9 @@ const TableCast = () => {
               Number
             </th>
 
-            <th scope="col" className="py-3 px-2 dark:text-white">
+            {/* <th scope="col" className="py-3 px-2 dark:text-white">
               Action
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
@@ -207,7 +214,7 @@ const TableCast = () => {
                 <td className="py-4 px-2 dark:text-white">{data.number}</td>
 
                 {/* Action */}
-                <td className="py-4 px-2">
+                {/* <td className="py-4 px-2">
                   <img
                     onClick={() => sendBlas(data)}
                     src={require("../../assets/icons/send.svg").default}
@@ -215,7 +222,7 @@ const TableCast = () => {
                     alt="send-icon"
                     data-testid="send-icon"
                   />
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (
@@ -223,6 +230,13 @@ const TableCast = () => {
           )}
         </tbody>
       </table>
+      <ModalBroad
+        open={open}
+        setOpen={openModal}
+        tabs={tabs}
+        setTabs={setTabs}
+        sendBlasChecked={sendBlasChecked}
+      />
     </div>
   );
 };

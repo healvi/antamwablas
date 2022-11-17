@@ -1,9 +1,16 @@
-import { Cluster } from "cluster";
 import { Dispatch, SetStateAction } from "react";
 
 export interface froms {
   name: string;
   file: FileList | null;
+}
+
+export interface modalBroad {
+  open: boolean | undefined;
+  setOpen: (open: boolean) => void;
+  sendBlasChecked: () => void;
+  setTabs: Dispatch<SetStateAction<tabs | undefined>>;
+  tabs: tabs | undefined;
 }
 
 export interface modalSend {
