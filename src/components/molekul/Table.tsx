@@ -126,24 +126,24 @@ const Table = () => {
     const areTrue = findTrue(Sorteds);
     const areFalse = findFalse(Sorteds);
     if (areTrue.length) {
-      console.log(areTrue, tabs);
       areTrue.map((v) => {
         tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
             let message = tabs?.find((c) => c.segmen == v);
-            let newdata = {
+            let newData = {
               data: d,
               segmen: v,
               message: message,
             };
-            await axios
-              .put("http://localhost:8000/api/wablast", newdata)
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((e) => {
-                console.log("error");
-              });
+            //   await axios
+            //     .put("http://localhost:8000/api/wablast", newData)
+            //     .then((response) => {
+            //       console.log(response);
+            //     })
+            //     .catch((e) => {
+            //       console.log("error");
+            //     });
+            console.log(newData);
           }
         });
       });
