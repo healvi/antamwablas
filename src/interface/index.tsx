@@ -1,3 +1,4 @@
+import { Cluster } from "cluster";
 import { Dispatch, SetStateAction } from "react";
 
 export interface froms {
@@ -15,6 +16,20 @@ export interface modalSend {
 export interface tabs {
   segmen: string;
   message: string;
+}
+
+export interface dataCLuster {
+  data?: CLuster[];
+}
+
+export interface CLuster {
+  people?: People[];
+  segmen?: string;
+  message?: string;
+}
+export interface People {
+  name: string;
+  phone: string;
 }
 
 export interface tabsModal {

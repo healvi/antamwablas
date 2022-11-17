@@ -3,6 +3,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import readXlsxFile from "read-excel-file";
 import {
+  CLuster,
+  dataCLuster,
+  People,
   sortlistTable,
   tableFormat,
   tableFormatCheck,
@@ -126,7 +129,38 @@ const Table = () => {
     const areTrue = findTrue(Sorteds);
     const areFalse = findFalse(Sorteds);
     if (areTrue.length) {
+      let result: dataCLuster = {
+        data: [],
+      };
       areTrue.map((v) => {
+        let message = tabs?.find((c) => c.segmen == v);
+        let segmentdata: CLuster = {
+          people: [],
+          segmen: v,
+          message: message?.message,
+        };
+        tables?.map(async (d) => {
+          if (d[v as keyof typeof Sorteds] === 1) {
+            let peopleData: People = {
+              name: d.nama,
+              phone: d.number,
+            };
+            segmentdata?.people?.push(peopleData);
+            //   await axios
+            //     .put("http://localhost:8000/api/wablast", newData)
+            //     .then((response) => {
+            //       console.log(response);
+            //     })
+            //     .catch((e) => {
+            //       console.log("error");
+            //     });
+          }
+        });
+        result?.data?.push(segmentdata);
+      });
+      console.log(result);
+    } else {
+      areFalse.map((v) => {
         tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
             let message = tabs?.find((c) => c.segmen == v);
@@ -147,8 +181,6 @@ const Table = () => {
           }
         });
       });
-      console.log(areTrue);
-    } else {
       console.log(areFalse);
     }
   };
