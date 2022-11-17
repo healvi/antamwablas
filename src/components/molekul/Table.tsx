@@ -10,6 +10,7 @@ const Table = () => {
   const [datas, setDatas] = useState<tableFormat[]>();
   const [tables, setTable] = useState<tableFormatCheck[]>();
   const [checkAll, setCheckAll] = useState(false);
+  const [open, setOpen] = useState(true);
   const [Sorteds, setSorted] = useState<sortlistTable>({
     KSM: false,
     KPR: false,
@@ -17,13 +18,19 @@ const Table = () => {
     DEPOSITO: false,
     MTR: false,
   });
+  const openModal = () => {};
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const schema = BlastSchema;
     if (e.target.files !== null) {
       const file = e.target.files[0];
       readXlsxFile(file, { schema }).then((rows) => {
-        let newData = rows.rows.map((v) => ({ ...v, checkAll: checkAll }));
+        let newData = rows.rows.map((v: any) => ({
+          ...v,
+          number: `+${v["number"]}`,
+          checkAll: checkAll,
+        }));
+
         setDatas(newData as tableFormatCheck[]);
       });
       // const file = e.target.files[0];

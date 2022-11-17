@@ -8,7 +8,6 @@ import { BroadcastSchema } from "../../utils/Schema";
 const TableCast = () => {
   const [tables, setTable] = useState<tableBroaFormatCheck[]>();
   const [Choses, setChoses] = useState("");
-  const [datas, setDatas] = useState<tableBroaFormat[]>();
   const [checkAll, setCheckAll] = useState(false);
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,14 +22,12 @@ const TableCast = () => {
     }
     e.target.value = "";
   };
-
   const modifytable = (data: tableBroaFormat[] | undefined) => {
     if (data) {
       let newData = data.map((v) => ({ ...v, checkAll: checkAll }));
       setTable(newData);
     }
   };
-
   const anCheckData = (data: tableBroaFormatCheck) => {
     const datas = tables?.map((object: tableBroaFormatCheck) => {
       if (object.number === data.number) {
@@ -77,7 +74,7 @@ const TableCast = () => {
 
   useEffect(() => {
     modifytable(tables);
-  }, [checkAll, datas]);
+  }, [checkAll]);
   useEffect(() => {
     // console.log(tables);
   }, [tables]);

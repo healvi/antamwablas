@@ -4,6 +4,11 @@ export interface froms {
   name: string;
   file: FileList | null;
 }
+
+export interface modalSend {
+  open: boolean | undefined;
+  setOpen: (open: boolean) => void;
+}
 export interface tableFormat {
   nama: string;
   number: string;
