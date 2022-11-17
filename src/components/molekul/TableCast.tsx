@@ -38,24 +38,35 @@ const TableCast = () => {
 
     setTable(datas);
   };
-  const sendBlasChecked = () => {
+  const sendBlasChecked = async () => {
     if (tables && Choses.length > 0) {
-      const data = tables.filter(
+      let data = tables.filter(
         (v: tableBroaFormatCheck) => v.checkAll === true
       );
-      data.map(async (v) => {
-        await axios
-          .put("http://localhost:8000/api/broadcast", {
-            ...v,
-            segmen: Choses,
-          })
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((e) => {
-            console.log("error");
-          });
-      });
+      let newdata = data.map(async (v) => ({ ...v, segmen: Choses }));
+
+      await axios
+        .put("http://localhost:8000/api/broadcast", newdata)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((e) => {
+          console.log("error");
+        });
+
+      // data.map(async (v) => {
+      //   await axios
+      //     .put("http://localhost:8000/api/broadcast", {
+      //       ...v,
+      //       segmen: Choses,
+      //     })
+      //     .then((response) => {
+      //       console.log(response);
+      //     })
+      //     .catch((e) => {
+      //       console.log("error");
+      //     });
+      // });
     }
   };
   const sendBlas = async (data: tableBroaFormatCheck) => {

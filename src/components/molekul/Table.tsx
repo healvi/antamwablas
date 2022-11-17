@@ -5,12 +5,13 @@ import readXlsxFile from "read-excel-file";
 import { sortlistTable, tableFormat, tableFormatCheck } from "../../interface";
 import { findTrue } from "../../utils/engine";
 import { BlastSchema } from "../../utils/Schema";
+import Modal from "./Modal";
 
 const Table = () => {
   const [datas, setDatas] = useState<tableFormat[]>();
   const [tables, setTable] = useState<tableFormatCheck[]>();
   const [checkAll, setCheckAll] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [Sorteds, setSorted] = useState<sortlistTable>({
     KSM: false,
     KPR: false,
@@ -18,7 +19,9 @@ const Table = () => {
     DEPOSITO: false,
     MTR: false,
   });
-  const openModal = () => {};
+  const openModal = () => {
+    setOpen(!open);
+  };
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const schema = BlastSchema;
@@ -393,7 +396,8 @@ const Table = () => {
                 {/* Action */}
                 <td className="py-4 px-2">
                   <img
-                    onClick={() => sendBlas(data)}
+                    onClick={() => openModal()}
+                    // onClick={() => sendBlas(data)}
                     src={require("../../assets/icons/send.svg").default}
                     className="icon send-icon cursor-pointer"
                     alt="send-icon"
@@ -407,6 +411,8 @@ const Table = () => {
           )}
         </tbody>
       </table>
+
+      <Modal open={open} setOpen={openModal} />
     </div>
   );
 };
