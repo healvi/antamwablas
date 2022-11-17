@@ -5,4 +5,11 @@ const findTrue = (obj) => {
   return data
 };
 
-export {findTrue}
+const findFalse = (obj) => {
+ const data =  Object.keys(obj).filter(
+    (key) => !obj[key]
+  )
+  return data
+};
+
+export {findTrue, findFalse}

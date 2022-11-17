@@ -10,6 +10,13 @@ const BroadcastSchema = {
       required: true,
     },
   }
+const PayrollSchema = {
+    nama: {
+      prop: "nama",
+      type: String,
+      required: true,
+    },
+  }
 
 const BlastSchema = {
     nama: {

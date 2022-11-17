@@ -8,6 +8,18 @@ export interface froms {
 export interface modalSend {
   open: boolean | undefined;
   setOpen: (open: boolean) => void;
+  sendBlasFilter: () => void;
+  setTabs: Dispatch<SetStateAction<tabs[] | undefined>>;
+  tabs: tabs[] | undefined;
+}
+export interface tabs {
+  segmen: string;
+  message: string;
+}
+
+export interface tabsModal {
+  setTabs: Dispatch<SetStateAction<tabs[] | undefined>>;
+  tabs: tabs[] | undefined;
 }
 export interface tableFormat {
   nama: string;

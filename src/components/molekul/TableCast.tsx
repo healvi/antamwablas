@@ -43,16 +43,22 @@ const TableCast = () => {
       let data = tables.filter(
         (v: tableBroaFormatCheck) => v.checkAll === true
       );
-      let newdata = data.map(async (v) => ({ ...v, segmen: Choses }));
-
-      await axios
-        .put("http://localhost:8000/api/broadcast", newdata)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((e) => {
-          console.log("error");
-        });
+      // let newdata = data.map((v) => ({ ...v, segmen: Choses }));
+      let newdata = {
+        data: data,
+        segmen: Choses,
+      };
+      console.log(newdata);
+      if (data.length) {
+        await axios
+          .put("http://localhost:8000/api/broadcast", newdata)
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((e) => {
+            console.log("error");
+          });
+      }
 
       // data.map(async (v) => {
       //   await axios

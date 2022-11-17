@@ -2,8 +2,13 @@ import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
 import readXlsxFile from "read-excel-file";
-import { sortlistTable, tableFormat, tableFormatCheck } from "../../interface";
-import { findTrue } from "../../utils/engine";
+import {
+  sortlistTable,
+  tableFormat,
+  tableFormatCheck,
+  tabs,
+} from "../../interface";
+import { findFalse, findTrue } from "../../utils/engine";
 import { BlastSchema } from "../../utils/Schema";
 import Modal from "./Modal";
 
@@ -19,8 +24,17 @@ const Table = () => {
     DEPOSITO: false,
     MTR: false,
   });
+  const [tabs, setTabs] = useState<tabs[]>();
+
   const openModal = () => {
     setOpen(!open);
+    const areTrue = findTrue(Sorteds);
+    const areFalse = findFalse(Sorteds);
+    if (areTrue.length) {
+      setTabs(areTrue.map((v) => ({ segmen: v, message: "" })));
+    } else {
+      setTabs(areFalse.map((v) => ({ segmen: v, message: "" })));
+    }
   };
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -110,15 +124,20 @@ const Table = () => {
   };
   const sendBlasFilter = () => {
     const areTrue = findTrue(Sorteds);
+    const areFalse = findFalse(Sorteds);
     if (areTrue.length) {
+      console.log(areTrue, tabs);
       areTrue.map((v) => {
         tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
+            let message = tabs?.find((c) => c.segmen == v);
+            let newdata = {
+              data: d,
+              segmen: v,
+              message: message,
+            };
             await axios
-              .put("http://localhost:8000/api/wablast", {
-                ...d,
-                segmen: v,
-              })
+              .put("http://localhost:8000/api/wablast", newdata)
               .then((response) => {
                 console.log(response);
               })
@@ -128,6 +147,9 @@ const Table = () => {
           }
         });
       });
+      console.log(areTrue);
+    } else {
+      console.log(areFalse);
     }
   };
   useEffect(() => {
@@ -138,25 +160,27 @@ const Table = () => {
   }, [checkAll, Sorteds, datas]);
   useEffect(() => {
     // console.log(tables);
-  }, [tables]);
+  }, [tables, tabs]);
 
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
       <div className="pb-4 bg-white dark:bg-indigo-900 p-2 flex flex-row">
         <div className="basis-1/2 flex flex-row items-center">
-          <button
-            onClick={() => sendBlasChecked()}
+          {/* <button
+            // onClick={() => sendBlasChecked()}
+            onClick={() => openModal()}
             type="button"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             Send All Checked
-          </button>
+          </button> */}
           <button
-            onClick={() => sendBlasFilter()}
+            // onClick={() => sendBlasFilter()}
+            onClick={() => openModal()}
             type="button"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
-            Send With Filter
+            Send Message
           </button>
         </div>
         <div className="basis-1/2">
@@ -183,7 +207,7 @@ const Table = () => {
       <table className="w-full text-sm text-left text-indigo-500 dark:text-indigo-400">
         <thead className="text-xs text-indigo-700 uppercase bg-indigo-50 dark:bg-indigo-700 dark:text-indigo-400">
           <tr>
-            <th scope="col" className="p-4">
+            {/* <th scope="col" className="p-4">
               <div className="flex items-center">
                 <input
                   onChange={() => setCheckAll(!checkAll)}
@@ -195,7 +219,7 @@ const Table = () => {
                   checkbox
                 </label>
               </div>
-            </th>
+            </th> */}
             <th scope="col" className="py-3 px-2 dark:text-white">
               Name
             </th>
@@ -273,17 +297,17 @@ const Table = () => {
               </label>
               DEPOSITO
             </th>
-
+            {/* 
             <th scope="col" className="py-3 px-2 dark:text-white">
               Action
-            </th>
+            </th> */}
           </tr>
         </thead>
         <tbody>
           {tables !== undefined && tables.length > 0 ? (
             tables.map((data) => (
               <tr className="bg-white border-b dark:bg-indigo-800 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-600">
-                <td className="p-4 w-4">
+                {/* <td className="p-4 w-4">
                   <div className="flex items-center">
                     <input
                       id="checkbox-table-search-1"
@@ -300,7 +324,7 @@ const Table = () => {
                       checkbox
                     </label>
                   </div>
-                </td>
+                </td> */}
                 <th
                   scope="row"
                   className="py-4 px-2 font-medium text-indigo-900 whitespace-nowrap dark:text-white"
@@ -394,7 +418,7 @@ const Table = () => {
                   )}
                 </td>
                 {/* Action */}
-                <td className="py-4 px-2">
+                {/* <td className="py-4 px-2">
                   <img
                     onClick={() => openModal()}
                     // onClick={() => sendBlas(data)}
@@ -403,7 +427,7 @@ const Table = () => {
                     alt="send-icon"
                     data-testid="send-icon"
                   />
-                </td>
+                </td> */}
               </tr>
             ))
           ) : (
@@ -412,7 +436,13 @@ const Table = () => {
         </tbody>
       </table>
 
-      <Modal open={open} setOpen={openModal} />
+      <Modal
+        open={open}
+        setOpen={openModal}
+        tabs={tabs}
+        setTabs={setTabs}
+        sendBlasFilter={sendBlasFilter}
+      />
     </div>
   );
 };
