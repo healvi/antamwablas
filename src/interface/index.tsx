@@ -16,6 +16,7 @@ export interface modalSend {
 export interface tabs {
   segmen: string;
   message: string;
+  image: string;
 }
 
 export interface dataCLuster {
@@ -26,6 +27,7 @@ export interface CLuster {
   people?: People[];
   segmen?: string;
   message?: string;
+  image?: string;
 }
 export interface People {
   name: string;

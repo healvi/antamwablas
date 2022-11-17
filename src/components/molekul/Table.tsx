@@ -34,9 +34,9 @@ const Table = () => {
     const areTrue = findTrue(Sorteds);
     const areFalse = findFalse(Sorteds);
     if (areTrue.length) {
-      setTabs(areTrue.map((v) => ({ segmen: v, message: "" })));
+      setTabs(areTrue.map((v) => ({ segmen: v, message: "", image: "" })));
     } else {
-      setTabs(areFalse.map((v) => ({ segmen: v, message: "" })));
+      setTabs(areFalse.map((v) => ({ segmen: v, message: "", image: "" })));
     }
   };
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,11 +133,12 @@ const Table = () => {
         data: [],
       };
       areTrue.map((v) => {
-        let message = tabs?.find((c) => c.segmen == v);
+        let tabsData = tabs?.find((c) => c.segmen == v);
         let segmentdata: CLuster = {
           people: [],
           segmen: v,
-          message: message?.message,
+          message: tabsData?.message,
+          image: tabsData?.image,
         };
         tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
@@ -159,16 +160,27 @@ const Table = () => {
         result?.data?.push(segmentdata);
       });
       console.log(result);
+      const formData = new FormData();
+      // formData.append("file", file);
     } else {
+      let result: dataCLuster = {
+        data: [],
+      };
       areFalse.map((v) => {
+        let tabsData = tabs?.find((c) => c.segmen == v);
+        let segmentdata: CLuster = {
+          people: [],
+          segmen: v,
+          message: tabsData?.message,
+          image: tabsData?.image,
+        };
         tables?.map(async (d) => {
           if (d[v as keyof typeof Sorteds] === 1) {
-            let message = tabs?.find((c) => c.segmen == v);
-            let newData = {
-              data: d,
-              segmen: v,
-              message: message,
+            let peopleData: People = {
+              name: d.nama,
+              phone: d.number,
             };
+            segmentdata?.people?.push(peopleData);
             //   await axios
             //     .put("http://localhost:8000/api/wablast", newData)
             //     .then((response) => {
@@ -177,9 +189,9 @@ const Table = () => {
             //     .catch((e) => {
             //       console.log("error");
             //     });
-            console.log(newData);
           }
         });
+        result?.data?.push(segmentdata);
       });
       console.log(areFalse);
     }

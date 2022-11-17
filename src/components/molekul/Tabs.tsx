@@ -15,6 +15,17 @@ const Tabs = ({ tabs, setTabs }: tabsModal) => {
     setTabs(newTabs);
     console.log(newTabs);
   };
+  const modifyImage = (e: any, segmen: string) => {
+    let image = e.target.files[0];
+    let newTabs = tabs?.map((v) => {
+      if (v.segmen === segmen) {
+        return { ...v, image: image };
+      }
+      return v;
+    });
+    setTabs(newTabs);
+    console.log(newTabs);
+  };
   useEffect(() => {}, [tabs]);
   return (
     <>
@@ -56,8 +67,28 @@ const Tabs = ({ tabs, setTabs }: tabsModal) => {
                     id={v.segmen}
                   >
                     <label
+                      className="block text-sm font-medium text-black-900 dark:text-black"
+                      htmlFor="file_input"
+                    >
+                      Upload Image
+                    </label>
+                    <input
+                      onChange={(e) => modifyImage(e, v.segmen)}
+                      className="block w-full text-sm text-black-900 border border-black-300 rounded-lg cursor-pointer bg-black-50 dark:text-black-400 focus:outline-none dark:bg-black-700 dark:border-black-600 dark:placeholder-black-400"
+                      aria-describedby="file_input_help"
+                      id="file_input"
+                      type="file"
+                    />
+                    <p
+                      className="mt-1 text-sm text-black-500 dark:text-black-300"
+                      id="file_input_help"
+                    >
+                      SVG, PNG, JPG or GIF (MAX. 800x400px).
+                    </p>
+
+                    <label
                       htmlFor="message"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      className="block text-sm font-medium text-gray-900 dark:text-white"
                     >
                       Your message
                     </label>
