@@ -6,6 +6,7 @@ import { tableBroaFormat, tableBroaFormatCheck } from "../../interface";
 import { BroadcastSchema } from "../../utils/Schema";
 import ModalBroad from "./ModalBroad";
 import { tabs } from "../../interface/index";
+import jsonToCsv from "../../utils/convertToExcel";
 
 const TableCast = () => {
   const [tables, setTable] = useState<tableBroaFormatCheck[]>();
@@ -13,6 +14,7 @@ const TableCast = () => {
   const [checkAll, setCheckAll] = useState(false);
   const [open, setOpen] = useState(false);
   const [tabs, setTabs] = useState<tabs>();
+  const [check, setCheck] = useState<number>(0);
   const openModal = () => {
     setOpen(!open);
   };
@@ -45,7 +47,7 @@ const TableCast = () => {
     setTable(datas);
   };
   const sendBlasChecked = async () => {
-    if (tables && Choses.length > 0) {
+    if (tables && check > 0) {
       let data = tables.filter(
         (v: tableBroaFormatCheck) => v.checkAll === true
       );
@@ -56,10 +58,21 @@ const TableCast = () => {
         image: tabs?.image,
         segmen: Choses,
       };
-      console.log(newdata);
+
+      const obj = data.map((v) => ({
+        nama: v.nama,
+        number: v.number,
+        message: tabs?.message,
+        segmen: Choses,
+      }));
+      const filecsv = jsonToCsv(obj);
+
+      const postdata = new FormData();
+      postdata.append("image", tabs?.image!);
+      postdata.append("file", filecsv);
       if (data.length) {
         await axios
-          .put("http://localhost:8000/api/broadcast", newdata)
+          .put("http://localhost:8000/api/broadcast", postdata)
           .then((response) => {
             console.log(response);
           })
@@ -67,20 +80,6 @@ const TableCast = () => {
             console.log("error");
           });
       }
-
-      // data.map(async (v) => {
-      //   await axios
-      //     .put("http://localhost:8000/api/broadcast", {
-      //       ...v,
-      //       segmen: Choses,
-      //     })
-      //     .then((response) => {
-      //       console.log(response);
-      //     })
-      //     .catch((e) => {
-      //       console.log("error");
-      //     });
-      // });
     }
   };
   const sendBlas = async (data: tableBroaFormatCheck) => {
@@ -100,7 +99,13 @@ const TableCast = () => {
   useEffect(() => {
     modifytable(tables);
   }, [checkAll]);
-  useEffect(() => {}, [tables, tabs]);
+  useEffect(() => {
+    let data = tables?.filter(
+      (v: tableBroaFormatCheck) => v.checkAll === true
+    ).length;
+    setCheck(data!);
+    console.log(data);
+  }, [tables, tabs, Choses, check]);
 
   return (
     <div className="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
@@ -126,9 +131,13 @@ const TableCast = () => {
           </select>
           <button
             onClick={() => openModal()}
-            // onClick={() => sendBlasChecked()}
+            disabled={check <= 0}
             type="button"
-            className="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className={
+              check <= 0
+                ? "mt-2 text-white bg-blue-300 hover:bg-blue-300 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-300 dark:hover:bg-blue-300 focus:outline-none dark:focus:ring-blue-300"
+                : "mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            }
           >
             Send All Checked
           </button>
